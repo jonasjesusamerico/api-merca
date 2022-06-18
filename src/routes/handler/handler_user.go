@@ -21,7 +21,6 @@ func (user UserHandler) RotasAutenticadas() UserHandler {
 	{
 		route.GET("/", controller.FindAll)
 		route.GET("/:id", controller.FindById)
-		route.POST("/", controller.Create)
 		route.PATCH("/:id", controller.Update)
 		route.DELETE("/:id", controller.Delete)
 	}
@@ -30,5 +29,12 @@ func (user UserHandler) RotasAutenticadas() UserHandler {
 }
 
 func (user UserHandler) RotasNaoAutenticadas() UserHandler {
+	controller := controllers.UserController{Repo: user.Repo}
+
+	route := user.Route.Group(controller.NameGroupRoute())
+	{
+		route.POST("/", controller.Create)
+	}
+
 	return user
 }

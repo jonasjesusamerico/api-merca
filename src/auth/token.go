@@ -60,6 +60,44 @@ func ExtrairUsuarioID(r *gin.Context) (uint64, error) {
 	return 0, errors.New("token inválido")
 }
 
+func ExtrairBanco(r *gin.Context) (string, error) {
+	tokenString := extrairToken(r)
+	token, erro := jwt.Parse(tokenString, retornarChaveDeVerificacao)
+	if erro != nil {
+		return "", erro
+	}
+
+	if permissoes, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		bancoDados := fmt.Sprintf("%s", permissoes["bancoDados"])
+		if erro != nil {
+			return "", erro
+		}
+
+		return bancoDados, nil
+	}
+
+	return "", errors.New("token inválido")
+}
+
+func ExtrairIsCustomizavel(r *gin.Context) (bool, error) {
+	tokenString := extrairToken(r)
+	token, erro := jwt.Parse(tokenString, retornarChaveDeVerificacao)
+	if erro != nil {
+		return false, erro
+	}
+
+	if permissoes, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		isCustmizavel := permissoes["isCustmizavel"].(bool)
+		if erro != nil {
+			return false, erro
+		}
+
+		return isCustmizavel, nil
+	}
+
+	return false, errors.New("token inválido")
+}
+
 func extrairToken(r *gin.Context) string {
 	token := r.GetHeader("Authorization")
 

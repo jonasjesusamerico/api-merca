@@ -67,7 +67,6 @@ func (cp CellPhoneController) Update(c *gin.Context) {
 		return
 	}
 
-	// repository.Basic{}.Model(&cellPhone).UpdateColumns(cellPhone)
 	c.JSON(http.StatusOK, cellPhone)
 }
 

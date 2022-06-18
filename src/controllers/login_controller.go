@@ -3,6 +3,7 @@ package controllers
 import (
 	"api-merca/src/auth"
 	"api-merca/src/model"
+	"api-merca/src/model/enum"
 	"api-merca/src/repository"
 	"net/http"
 	"strconv"
@@ -40,7 +41,7 @@ func (cp LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	token, erro := auth.CriarToken(usuarioSalvoNoBanco.ID, usuarioSalvoNoBanco.IsCustomizavel, usuarioSalvoNoBanco.Banco)
+	token, erro := auth.CriarToken(usuarioSalvoNoBanco.ID, usuarioSalvoNoBanco.IsCustomizavel, enum.BancoDados(usuarioSalvoNoBanco.BancoDados))
 	if erro != nil {
 		// respostas.Erro(w, http.StatusInternalServerError, erro)
 		return

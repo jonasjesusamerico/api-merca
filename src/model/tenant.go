@@ -1,9 +1,15 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"api-merca/src/contexto"
+)
 
 type Tenant struct {
-	gorm.Model
-	Entidade string `json:"entidade"`
-	Database string `json:"database"`
+	TenantId   uint64 `json:"tenant_id,omitempty"`
+	BancoDados string `json:"banco_dados,omitempty"`
+}
+
+func (t *Tenant) SetTenant() {
+	t.TenantId = contexto.ContextoAutenticacao.GetTenantId()
+	t.BancoDados = contexto.ContextoAutenticacao.GetBancoDados()
 }

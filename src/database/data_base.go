@@ -1,10 +1,13 @@
 package database
 
 import (
+	"api-merca/src/contexto"
 	"api-merca/src/model"
+	"api-merca/src/model/enum"
 	"fmt"
 	"log"
 
+	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -19,10 +22,11 @@ type database struct {
 	db_postgres *gorm.DB
 }
 
-func (d database) With(key string) *gorm.DB {
-	if key == "MY_SQL" {
+func (d database) With() *gorm.DB {
+	key := contexto.ContextoAutenticacao.GetBancoDados()
+	if key == string(enum.MY_SQL) {
 		return d.db_mysql
-	} else if key == "POSTGRES" {
+	} else if key == string(enum.POSTGRES_SQL) {
 		return d.db_postgres
 	}
 	return nil
@@ -35,18 +39,19 @@ func ConnectWithDatabase() {
 		log.Panic("Erro ao conectar ao banco de dados")
 	}
 
-	// StringConexaoBanco := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local",
-	// 	"usuario",
-	// 	"senha",
-	// 	"db_name",
-	// )
-	// Connection.db_mysql, err = gorm.Open(mysql.Open(StringConexaoBanco), &gorm.Config{})
+	StringConexaoBanco := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local",
+		"root",
+		"password",
+		"devbook",
+	)
+	Connection.db_mysql, err = gorm.Open(mysql.Open(StringConexaoBanco), &gorm.Config{})
 
-	// if err != nil {
-	// 	log.Panic("Erro ao conectar ao banco de dados")
-	// }
+	if err != nil {
+		log.Panic("Erro ao conectar ao banco de dados")
+	}
 
 	Connection.db_postgres.AutoMigrate(&model.CellPhone{}, &model.User{})
+	Connection.db_mysql.AutoMigrate(&model.CellPhone{}, &model.User{})
 	// DB.AutoMigrate(&models.CreditCard{})
 
 	if err != nil {

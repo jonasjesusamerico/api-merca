@@ -22,7 +22,7 @@ func (user LoginHandler) RotasNaoAutenticadas() LoginHandler {
 
 	route := user.Route.Group("/" + controller.NameGroupRoute())
 	{
-		route.GET("/", controller.Login)
+		route.POST("/", controller.Login)
 	}
 
 	return user

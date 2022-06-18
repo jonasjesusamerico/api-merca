@@ -13,18 +13,18 @@ type UserController struct {
 	Repo repository.IRepository
 }
 
-func (cp UserController) NameGroupRoute() string {
+func (ur UserController) NameGroupRoute() string {
 	return "/users"
 }
 
-func (cp UserController) FindAll(c *gin.Context) {
+func (ur UserController) FindAll(c *gin.Context) {
 	var users []model.User
-	// cp.Repo.Find(&users)
-	cp.Repo.FindAll(&users, "")
+	// ur.Repo.Find(&users)
+	ur.Repo.FindAll(&users, "")
 	c.JSON(http.StatusOK, users)
 }
 
-func (cp UserController) FindById(c *gin.Context) {
+func (ur UserController) FindById(c *gin.Context) {
 	var user model.User
 	id, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 64)
 
@@ -40,7 +40,7 @@ func (cp UserController) FindById(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (cp UserController) Create(c *gin.Context) {
+func (ur UserController) Create(c *gin.Context) {
 	var user model.User
 
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -49,17 +49,16 @@ func (cp UserController) Create(c *gin.Context) {
 		})
 		return
 	}
-	user.Formatar()
 
-	cp.Repo.Save(&user)
+	ur.Repo.Save(&user)
 	c.JSON(http.StatusOK, user)
 }
 
-func (cp UserController) Update(c *gin.Context) {
+func (ur UserController) Update(c *gin.Context) {
 	var user model.User
 	id := c.Params.ByName("id")
 
-	cp.Repo.FindById(&user, id)
+	ur.Repo.FindById(&user, id)
 
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -68,17 +67,16 @@ func (cp UserController) Update(c *gin.Context) {
 		return
 	}
 
-	// repository.Basic{}.Model(&user).UpdateColumns(user)
 	c.JSON(http.StatusOK, user)
 }
 
-func (cp UserController) Delete(c *gin.Context) {
+func (ur UserController) Delete(c *gin.Context) {
 	var user model.User
 	id := c.Params.ByName("id")
 	repository.Basic{}.Delete(&user, id)
 	c.JSON(http.StatusOK, gin.H{"data": "User deletado com sucesso"})
 }
 
-func (cp UserController) RotaCustomizada(c *gin.Context) {
+func (ur UserController) RotaCustomizada(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"Message": "Oi, eu sou uma rota customizada!"})
 }
