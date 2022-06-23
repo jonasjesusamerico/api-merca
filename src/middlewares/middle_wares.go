@@ -23,15 +23,19 @@ func MiddleAuth() gin.HandlerFunc {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 		}
 
-		defer func() {
-			contexto.Cancel()
-		}()
-
 		usuarioId, _ := auth.ExtrairUsuarioID(ctx)
 		bancoDados, _ := auth.ExtrairBanco(ctx)
 		isCustomizavel, _ := auth.ExtrairIsCustomizavel(ctx)
 
 		contexto.SetContextoAutenticacao(usuarioId, bancoDados, isCustomizavel)
 
+	}
+}
+
+func MiddleRecriaContexto() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.Next()
+		contexto.Cancel()
+		contexto.CriaContextoGlobalAutenticacao()
 	}
 }

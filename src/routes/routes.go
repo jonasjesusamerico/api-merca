@@ -24,6 +24,7 @@ func (route Router) Route() {
 func createRoutes(r *gin.Engine) {
 	db := repository.Basic{}
 
+	gin.SetMode(gin.ReleaseMode)
 	handler.Handler{Repo: db, Route: r}.MakeHandlers()
 
 }

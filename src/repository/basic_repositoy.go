@@ -1,14 +1,17 @@
 package repository
 
 import (
+	"api-merca/src/contexto"
 	"api-merca/src/database"
 	"api-merca/src/model"
+
+	"gorm.io/gorm"
 )
 
 type Basic struct {
 }
 
-func (br Basic) Insert(model model.IModel) (uint64, error) {
+func (Basic) Insert(model model.IModel) (uint64, error) {
 	if err := model.Validate(); err != nil {
 		return 0, err
 	}
@@ -18,14 +21,14 @@ func (br Basic) Insert(model model.IModel) (uint64, error) {
 	return model.GetId(), nil
 }
 
-func (br Basic) Update(model model.IModel) error {
+func (Basic) Update(model model.IModel) error {
 	if err := model.Validate(); err != nil {
 		return err
 	}
 	return database.Connection.With().Save(model).Error
 }
 
-func (br Basic) Save(model model.IModel) (uint64, error) {
+func (Basic) Save(model model.IModel) (uint64, error) {
 	if err := model.Validate(); err != nil {
 		return 0, err
 	}
@@ -35,7 +38,7 @@ func (br Basic) Save(model model.IModel) (uint64, error) {
 	return model.GetId(), nil
 }
 
-func (br Basic) SaveAll(models interface{}) error {
+func (Basic) SaveAll(models interface{}) error {
 
 	if err := database.Connection.With().Save(models).Error; err != nil {
 		return err
@@ -43,18 +46,33 @@ func (br Basic) SaveAll(models interface{}) error {
 	return nil
 }
 
-func (br Basic) FindById(receiver model.IModel, id interface{}) error {
-	return database.Connection.With().First(receiver, id).Error
+func (Basic) FindById(receiver model.IModel, id interface{}) error {
+	return where("", nil).Statement.First(receiver, id).Error
 }
 
-func (br Basic) FindFirst(receiver model.IModel, where string, args ...interface{}) error {
-	return database.Connection.With().Where(where, args...).Limit(1).Find(receiver).Error
+func (Basic) FindFirst(receiver model.IModel, query string, args ...interface{}) error {
+	return where(query, args...).Statement.Limit(1).Find(receiver).Error
 }
 
-func (br Basic) FindAll(models interface{}, where string, args ...interface{}) (err error) {
-	return database.Connection.With().Where(where, args...).Find(models).Error
+func (Basic) FindAll(models interface{}, query string, args ...interface{}) (err error) {
+	return where(query, args...).Statement.Find(models).Error
 }
 
-func (br Basic) Delete(model model.IModel, where string, args ...interface{}) error {
-	return database.Connection.With().Where(where, args...).Delete(&model).Error
+func (Basic) Delete(model model.IModel, query string, args ...interface{}) error {
+	return where(query, args...).Statement.Delete(&model).Error
+}
+
+func where(query string, args ...interface{}) gorm.DB {
+	tenantId := contexto.ContextoAutenticacao.GetTenantId()
+	if tenantId == 0 {
+		return *database.Connection.With().Where(query, args...)
+	}
+
+	if len(query) == 0 && len(args) == 0 {
+		query = "tenant_id = ?"
+	} else {
+		query = query + " and tenant_id = ?"
+	}
+	args = append(args, tenantId)
+	return *database.Connection.With().Where(query, args...)
 }

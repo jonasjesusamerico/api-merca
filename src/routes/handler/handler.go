@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"api-merca/src/middlewares"
 	"api-merca/src/repository"
 
 	"github.com/gin-gonic/gin"
@@ -20,10 +21,9 @@ func (h Handler) MakeHandlers() {
 
 	api := main.Group("api")
 
-	v1 := api.Group("v1")
+	v1 := api.Group("v1", middlewares.MiddleRecriaContexto())
 	{
 		UserHandler{Repo: h.Repo, Route: v1}.RotasAutenticadas().RotasNaoAutenticadas()
 		CellPhoneHandler{Repo: h.Repo, Route: v1}.RotasAutenticadas().RotasNaoAutenticadas()
 	}
-
 }
