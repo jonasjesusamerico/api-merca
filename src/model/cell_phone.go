@@ -3,9 +3,9 @@ package model
 import "strings"
 
 type CellPhone struct {
-	ID   uint64 `gorm:"primarykey"`
-	Name string `json:"name"`
-	Num  string `json:"cellphone"`
+	ID   uint64 `gorm:"primarykey column:id"`
+	Name string `gorm:"column:name" json:"name" `
+	Num  string `gorm:"column:cell_phone" json:"cellphone"`
 	Tenant
 }
 
