@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// User representa um usuário utilizando a rede social
 type User struct {
 	ID             uint64    `gorm:"primarykey column:id" json:"id,omitempty"`
 	Email          string    `gorm:"column:email" json:"email,omitempty"`
