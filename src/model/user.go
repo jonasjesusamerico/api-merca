@@ -31,19 +31,19 @@ func (usuario *User) Validate() error {
 }
 
 func (u *User) AfterCreate(tx *gorm.DB) (err error) {
-	tx.Model(u).Update("TenantId", u.ID)
+	err = tx.Model(u).Update("TenantId", u.ID).Error
 	return
 }
 
-func (usuario *User) Formatar() error {
+func (usuario *User) Formatar() (erro error) {
 	usuario.Email = strings.TrimSpace(usuario.Email)
 
 	senhaComHash, erro := auth.Hash(usuario.Senha)
 	if erro != nil {
-		return erro
+		return
 	}
 
 	usuario.Senha = string(senhaComHash)
 
-	return nil
+	return
 }

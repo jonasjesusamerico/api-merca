@@ -11,5 +11,7 @@ type Tenant struct {
 
 func (t *Tenant) SetTenant() {
 	t.TenantId = contexto.ContextoAutenticacao.GetTenantId()
-	t.BancoDados = contexto.ContextoAutenticacao.GetBancoDados()
+	if t.BancoDados == "" {
+		t.BancoDados = contexto.ContextoAutenticacao.GetBancoDados()
+	}
 }

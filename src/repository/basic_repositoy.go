@@ -11,61 +11,62 @@ import (
 type Basic struct {
 }
 
-func (Basic) Insert(model model.IModel) (uint64, error) {
-	if err := model.Validate(); err != nil {
-		return 0, err
+func (Basic) Insert(model model.IModel) (id uint64, err error) {
+	if err = model.Validate(); err != nil {
+		return
 	}
-	if err := database.Connection.With().Create(model).Error; err != nil {
-		return 0, err
+	if err = getBancoDados().Create(model).Error; err == nil {
+		id = model.GetId()
 	}
-	return model.GetId(), nil
+	return
 }
 
-func (Basic) Update(model model.IModel) error {
-	if err := model.Validate(); err != nil {
-		return err
+func (Basic) Update(model model.IModel) (err error) {
+	if err = model.Validate(); err == nil {
+		err = getBancoDados().Save(model).Error
 	}
-	return database.Connection.With().Save(model).Error
+	return
 }
 
-func (Basic) Save(model model.IModel) (uint64, error) {
-	if err := model.Validate(); err != nil {
-		return 0, err
+func (Basic) Save(model model.IModel) (id uint64, err error) {
+	if err = model.Validate(); err != nil {
+		return
 	}
-	if err := database.Connection.With().Save(model).Error; err != nil {
-		return 0, err
+	if err = getBancoDados().Save(model).Error; err == nil {
+		id = model.GetId()
 	}
-	return model.GetId(), nil
+	return
 }
 
-func (Basic) SaveAll(models interface{}) error {
-
-	if err := database.Connection.With().Save(models).Error; err != nil {
-		return err
-	}
-	return nil
+func (Basic) SaveAll(models interface{}) (err error) {
+	err = getBancoDados().Save(models).Error
+	return
 }
 
-func (Basic) FindById(receiver model.IModel, id interface{}) error {
-	return where("", nil).Statement.First(receiver, id).Error
+func (Basic) FindById(receiver model.IModel, id interface{}) (err error) {
+	err = where("", nil).Statement.First(receiver, id).Error
+	return
 }
 
-func (Basic) FindFirst(receiver model.IModel, query string, args ...interface{}) error {
-	return where(query, args...).Statement.Limit(1).Find(receiver).Error
+func (Basic) FindFirst(receiver model.IModel, query string, args ...interface{}) (err error) {
+	err = where(query, args...).Statement.Limit(1).Find(receiver).Error
+	return
 }
 
 func (Basic) FindAll(models interface{}, query string, args ...interface{}) (err error) {
-	return where(query, args...).Statement.Find(models).Error
+	err = where(query, args...).Statement.Find(models).Error
+	return
 }
 
-func (Basic) Delete(model model.IModel, query string, args ...interface{}) error {
-	return where(query, args...).Statement.Delete(&model).Error
+func (Basic) Delete(model model.IModel, query string, args ...interface{}) (err error) {
+	err = where(query, args...).Statement.Delete(&model).Error
+	return
 }
 
-func where(query string, args ...interface{}) gorm.DB {
+func where(query string, args ...interface{}) *gorm.DB {
 	tenantId := contexto.ContextoAutenticacao.GetTenantId()
 	if tenantId == 0 {
-		return *database.Connection.With().Where(query, args...)
+		return getBancoDados().Where(query, args...)
 	}
 
 	if len(query) == 0 && len(args) == 0 {
@@ -74,5 +75,9 @@ func where(query string, args ...interface{}) gorm.DB {
 		query = query + " and tenant_id = ?"
 	}
 	args = append(args, tenantId)
-	return *database.Connection.With().Where(query, args...)
+	return getBancoDados().Where(query, args...)
+}
+
+func getBancoDados() (bancoDados *gorm.DB) {
+	return database.Connection.WithContext()
 }

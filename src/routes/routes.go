@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"api-merca/src/repository"
 	"api-merca/src/routes/handler"
 
 	"github.com/gin-gonic/gin"
@@ -22,9 +21,7 @@ func (route Router) Route() {
 
 // createDefaultRoutes é Responsavel pro criar as rotas padrão do CRUD, basta adicionar o controlador assinado pela interface
 func createRoutes(r *gin.Engine) {
-	db := repository.Basic{}
 
 	gin.SetMode(gin.ReleaseMode)
-	handler.Handler{Repo: db, Route: r}.MakeHandlers()
-
+	handler.Handler{Route: r}.MakeHandlers()
 }

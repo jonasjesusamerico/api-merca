@@ -9,10 +9,6 @@ type CellPhone struct {
 	Tenant
 }
 
-func (c CellPhone) New(name, num string) *CellPhone {
-	return &CellPhone{Name: name, Num: num}
-}
-
 func (c CellPhone) GetId() uint64 {
 	return c.ID
 }

@@ -18,29 +18,30 @@ type ContextoGeral struct {
 	cancel func()
 }
 
-func (ContextoGeral) GetTenantId() uint64 {
+func (ContextoGeral) GetTenantId() (tenantId uint64) {
 	obj := ContextoAutenticacao.ctx.Value(Tenant{})
-	if obj == nil {
-		return 0
+	if obj != nil {
+		tenantId = obj.(Tenant).TenantId
 	}
-	return obj.(Tenant).TenantId
+	return
 }
 
-func (ContextoGeral) IsCustomizavel() bool {
+func (ContextoGeral) IsCustomizavel() (isCustomizavel bool) {
 	obj := ContextoAutenticacao.ctx.Value(Tenant{})
-	if obj == nil {
-		return false
+	if obj != nil {
+		isCustomizavel = obj.(Tenant).IsCustomizavel
 	}
-	return obj.(Tenant).IsCustomizavel
+	return
 }
 
-func (ContextoGeral) GetBancoDados() string {
+func (ContextoGeral) GetBancoDados() (bancoDados string) {
 	object := ContextoAutenticacao.ctx.Value(Tenant{})
-	if object == nil {
-		return string(enum.POSTGRES_SQL)
+	if object != nil {
+		bancoDados = object.(Tenant).BancoDados
+		return
 	}
-
-	return object.(Tenant).BancoDados
+	bancoDados = string(enum.POSTGRES_SQL)
+	return
 }
 
 func CriaContextoGlobalAutenticacao() {

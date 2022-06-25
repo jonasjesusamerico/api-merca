@@ -14,7 +14,7 @@ import (
 )
 
 // CriarToken retorna um token assinado com as permissões do usuário
-func CriarToken(usuarioID uint64, isCustmizavel bool, bancoDados enum.BancoDados) (string, error) {
+func CriarToken(usuarioID uint64, isCustmizavel bool, bancoDados enum.BancoDados) (tokenNew string, err error) {
 	permissoes := jwt.MapClaims{}
 	permissoes["authorized"] = true
 	permissoes["exp"] = time.Now().Add(time.Hour * 6).Unix()
@@ -22,90 +22,92 @@ func CriarToken(usuarioID uint64, isCustmizavel bool, bancoDados enum.BancoDados
 	permissoes["isCustmizavel"] = isCustmizavel
 	permissoes["bancoDados"] = bancoDados
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, permissoes)
-	return token.SignedString([]byte(config.SecretKey))
+	tokenNew, err = token.SignedString([]byte(config.SecretKey))
+	return
 }
 
 // ValidarToken verifica se o token passado na requisição é valido
-func ValidarToken(r *gin.Context) error {
+func ValidarToken(r *gin.Context) (erro error) {
 	tokenString := extrairToken(r)
 	token, erro := jwt.Parse(tokenString, retornarChaveDeVerificacao)
 	if erro != nil {
-		return erro
+		return
 	}
 
 	if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return nil
+		return
 	}
 
-	return errors.New("token inválido")
+	erro = errors.New("token inválido")
+	return
 }
 
 // ExtrairUsuarioID retorna o usuarioId que está salvo no token
-func ExtrairUsuarioID(r *gin.Context) (uint64, error) {
+func ExtrairUsuarioID(r *gin.Context) (usuarioID uint64, erro error) {
 	tokenString := extrairToken(r)
 	token, erro := jwt.Parse(tokenString, retornarChaveDeVerificacao)
 	if erro != nil {
-		return 0, erro
+		return
 	}
 
 	if permissoes, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		usuarioID, erro := strconv.ParseUint(fmt.Sprintf("%.0f", permissoes["usuarioId"]), 10, 64)
+		usuarioID, erro = strconv.ParseUint(fmt.Sprintf("%.0f", permissoes["usuarioId"]), 10, 64)
 		if erro != nil {
-			return 0, erro
+			return
 		}
 
-		return usuarioID, nil
+		return
 	}
 
-	return 0, errors.New("token inválido")
+	erro = errors.New("token inválido")
+	return
 }
 
-func ExtrairBanco(r *gin.Context) (string, error) {
+func ExtrairBanco(r *gin.Context) (bancoDados string, erro error) {
 	tokenString := extrairToken(r)
 	token, erro := jwt.Parse(tokenString, retornarChaveDeVerificacao)
 	if erro != nil {
-		return "", erro
+		return
 	}
 
 	if permissoes, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		bancoDados := fmt.Sprintf("%s", permissoes["bancoDados"])
+		bancoDados = fmt.Sprintf("%s", permissoes["bancoDados"])
 		if erro != nil {
-			return "", erro
+			return
 		}
 
-		return bancoDados, nil
+		return
 	}
-
-	return "", errors.New("token inválido")
+	erro = errors.New("token inválido")
+	return
 }
 
-func ExtrairIsCustomizavel(r *gin.Context) (bool, error) {
+func ExtrairIsCustomizavel(r *gin.Context) (isCustmizavel bool, erro error) {
 	tokenString := extrairToken(r)
 	token, erro := jwt.Parse(tokenString, retornarChaveDeVerificacao)
 	if erro != nil {
-		return false, erro
+		return
 	}
 
 	if permissoes, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		isCustmizavel := permissoes["isCustmizavel"].(bool)
+		isCustmizavel = permissoes["isCustmizavel"].(bool)
 		if erro != nil {
-			return false, erro
+			return
 		}
-
-		return isCustmizavel, nil
+		return
 	}
-
-	return false, errors.New("token inválido")
+	erro = errors.New("token inválido")
+	return
 }
 
-func extrairToken(r *gin.Context) string {
-	token := r.GetHeader("Authorization")
+func extrairToken(r *gin.Context) (token string) {
+	token = r.GetHeader("Authorization")
 
-	if len(strings.Split(token, " ")) == 2 {
-		return strings.Split(token, " ")[1]
+	if len(strings.Split(token, " ")) != 2 {
+		return
 	}
-
-	return ""
+	token = strings.Split(token, " ")[1]
+	return
 }
 
 func retornarChaveDeVerificacao(token *jwt.Token) (interface{}, error) {

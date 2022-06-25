@@ -22,14 +22,14 @@ type database struct {
 	db_postgres *gorm.DB
 }
 
-func (d database) With() *gorm.DB {
+func (d database) WithContext() (bancoDados *gorm.DB) {
 	key := contexto.ContextoAutenticacao.GetBancoDados()
 	if key == string(enum.MY_SQL) {
-		return d.db_mysql
+		bancoDados = d.db_mysql
 	} else if key == string(enum.POSTGRES_SQL) {
-		return d.db_postgres
+		bancoDados = d.db_postgres
 	}
-	return nil
+	return
 }
 
 func ConnectWithDatabase() {
