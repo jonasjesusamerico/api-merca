@@ -17,7 +17,7 @@ func (user UserHandler) RotasAutenticadas() UserHandler {
 
 	controller := controllers.UserController{Repo: user.Repo}
 
-	route := user.Route.Group(controller.NameGroupRoute(), middlewares.MiddleAuth())
+	route := user.Route.Group(controller.NameGroupRoute(), middlewares.MiddleAuthCriaContextoDefaultDataBase())
 	{
 		route.GET("/", controller.FindAll)
 		route.GET("/:id", controller.FindById)
