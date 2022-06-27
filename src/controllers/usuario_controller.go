@@ -9,74 +9,74 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserController struct {
+type UsuarioController struct {
 	Repo repository.IRepository
 }
 
-func (ur UserController) NameGroupRoute() string {
-	return "/users"
+func (uc UsuarioController) NameGroupRoute() string {
+	return "/usuarios"
 }
 
-func (ur UserController) FindAll(c *gin.Context) {
-	var users []model.User
-	// ur.Repo.Find(&users)
-	ur.Repo.FindAll(&users, "")
-	c.JSON(http.StatusOK, users)
+func (uc UsuarioController) FindAll(c *gin.Context) {
+	var usuarios []model.Usuario
+	// uc.Repo.Find(&usuarios)
+	uc.Repo.FindAll(&usuarios, "")
+	c.JSON(http.StatusOK, usuarios)
 }
 
-func (ur UserController) FindById(c *gin.Context) {
-	var user model.User
+func (uc UsuarioController) FindById(c *gin.Context) {
+	var usuario model.Usuario
 	id, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 64)
 
-	repository.Basic{}.FindById(&user, id)
+	repository.Basic{}.FindById(&usuario, id)
 
-	if user.ID == 0 {
+	if usuario.ID == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
-			"not_found": "User not found",
+			"not_found": "Usuario not found",
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, usuario)
 }
 
-func (ur UserController) Create(c *gin.Context) {
-	var user model.User
+func (uc UsuarioController) Create(c *gin.Context) {
+	var usuario model.Usuario
 
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&usuario); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	ur.Repo.Save(&user)
-	c.JSON(http.StatusOK, user)
+	uc.Repo.Save(&usuario)
+	c.JSON(http.StatusOK, usuario)
 }
 
-func (ur UserController) Update(c *gin.Context) {
-	var user model.User
+func (uc UsuarioController) Update(c *gin.Context) {
+	var usuario model.Usuario
 	id := c.Params.ByName("id")
 
-	ur.Repo.FindById(&user, id)
+	uc.Repo.FindById(&usuario, id)
 
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&usuario); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, usuario)
 }
 
-func (ur UserController) Delete(c *gin.Context) {
-	var user model.User
+func (uc UsuarioController) Delete(c *gin.Context) {
+	var usuario model.Usuario
 	id := c.Params.ByName("id")
-	repository.Basic{}.Delete(&user, id)
-	c.JSON(http.StatusOK, gin.H{"data": "User deletado com sucesso"})
+	repository.Basic{}.Delete(&usuario, id)
+	c.JSON(http.StatusOK, gin.H{"data": "Usuario deletado com sucesso"})
 }
 
-func (ur UserController) RotaCustomizada(c *gin.Context) {
+func (uc UsuarioController) RotaCustomizada(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"Message": "Oi, eu sou uma rota customizada!"})
 }

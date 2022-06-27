@@ -8,27 +8,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type CellPhoneHandler struct {
+type TelefoneHandler struct {
 	Repo  repository.IRepository
 	Route *gin.RouterGroup
 }
 
 // MakeCustom tem como objetivo ser adicionado as rotas que não são padrão do crud
-func (ch CellPhoneHandler) MakeCustom(route *gin.Engine) {
+func (th TelefoneHandler) MakeCustom(route *gin.Engine) {
 	db := repository.Basic{}
 
-	cellPhoneController := controllers.CellPhoneController{Repo: db}
+	cellPhoneController := controllers.TelefoneController{Repo: db}
 
 	r := route.Group("/" + cellPhoneController.NameGroupRoute())
 	r.POST("/contatos", cellPhoneController.CreateContatos)
 
 }
 
-func (celular CellPhoneHandler) RotasAutenticadas() CellPhoneHandler {
+func (th TelefoneHandler) RotasAutenticadas() TelefoneHandler {
 
-	controller := controllers.CellPhoneController{Repo: celular.Repo}
+	controller := controllers.TelefoneController{Repo: th.Repo}
 
-	route := celular.Route.Group(controller.NameGroupRoute(), middlewares.MiddleAuth())
+	route := th.Route.Group(controller.NameGroupRoute(), middlewares.MiddleAuth())
 	{
 		route.GET("/", controller.FindAll)
 		route.GET("/:id", controller.FindById)
@@ -38,10 +38,10 @@ func (celular CellPhoneHandler) RotasAutenticadas() CellPhoneHandler {
 		route.POST("/contatos", controller.CreateContatos)
 	}
 
-	return celular
+	return th
 }
 
-func (celulars CellPhoneHandler) RotasNaoAutenticadas() CellPhoneHandler {
+func (t TelefoneHandler) RotasNaoAutenticadas() TelefoneHandler {
 
-	return celulars
+	return t
 }

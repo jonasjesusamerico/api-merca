@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type Usuario struct {
 	ID             uint64    `gorm:"primarykey column:id" json:"id,omitempty"`
 	Email          string    `gorm:"column:email" json:"email,omitempty"`
 	Senha          string    `gorm:"column:senha" json:"-"`
@@ -19,31 +19,31 @@ type User struct {
 	Tenant
 }
 
-func (usuario User) GetId() uint64 {
-	return usuario.ID
+func (u Usuario) GetId() uint64 {
+	return u.ID
 }
 
-func (usuario *User) Validate() error {
-	usuario.SetTenant()
-	usuario.Formatar()
+func (u *Usuario) Validate() error {
+	u.SetTenant()
+	u.Formatar()
 
 	return nil
 }
 
-func (u *User) AfterCreate(tx *gorm.DB) (err error) {
+func (u *Usuario) AfterCreate(tx *gorm.DB) (err error) {
 	err = tx.Model(u).Update("TenantId", u.ID).Error
 	return
 }
 
-func (usuario *User) Formatar() (erro error) {
-	usuario.Email = strings.TrimSpace(usuario.Email)
+func (u *Usuario) Formatar() (erro error) {
+	u.Email = strings.TrimSpace(u.Email)
 
-	senhaComHash, erro := auth.Hash(usuario.Senha)
+	senhaComHash, erro := auth.Hash(u.Senha)
 	if erro != nil {
 		return
 	}
 
-	usuario.Senha = string(senhaComHash)
+	u.Senha = string(senhaComHash)
 
 	return
 }

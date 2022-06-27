@@ -8,16 +8,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserHandler struct {
+type UsuarioHandler struct {
 	Repo  repository.IRepository
 	Route *gin.RouterGroup
 }
 
-func (user UserHandler) RotasAutenticadas() UserHandler {
+func (u UsuarioHandler) RotasAutenticadas() UsuarioHandler {
 
-	controller := controllers.UserController{Repo: user.Repo}
+	controller := controllers.UsuarioController{Repo: u.Repo}
 
-	route := user.Route.Group(controller.NameGroupRoute(), middlewares.MiddleAuthCriaContextoDefaultDataBase())
+	route := u.Route.Group(controller.NameGroupRoute(), middlewares.MiddleAuthCriaContextoDefaultDataBase())
 	{
 		route.GET("/", controller.FindAll)
 		route.GET("/:id", controller.FindById)
@@ -25,16 +25,16 @@ func (user UserHandler) RotasAutenticadas() UserHandler {
 		route.DELETE("/:id", controller.Delete)
 	}
 
-	return user
+	return u
 }
 
-func (user UserHandler) RotasNaoAutenticadas() UserHandler {
-	controller := controllers.UserController{Repo: user.Repo}
+func (u UsuarioHandler) RotasNaoAutenticadas() UsuarioHandler {
+	controller := controllers.UsuarioController{Repo: u.Repo}
 
-	route := user.Route.Group(controller.NameGroupRoute())
+	route := u.Route.Group(controller.NameGroupRoute())
 	{
 		route.POST("/", controller.Create)
 	}
 
-	return user
+	return u
 }

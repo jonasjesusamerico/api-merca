@@ -13,7 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CriarToken retorna um token assinado com as permissões do usuário
 func CriarToken(usuarioID uint64, isCustmizavel bool, bancoDados enum.BancoDados) (tokenNew string, err error) {
 	permissoes := jwt.MapClaims{}
 	permissoes["authorized"] = true
@@ -26,7 +25,6 @@ func CriarToken(usuarioID uint64, isCustmizavel bool, bancoDados enum.BancoDados
 	return
 }
 
-// ValidarToken verifica se o token passado na requisição é valido
 func ValidarToken(r *gin.Context) (erro error) {
 	tokenString := extrairToken(r)
 	token, erro := jwt.Parse(tokenString, retornarChaveDeVerificacao)
@@ -42,7 +40,6 @@ func ValidarToken(r *gin.Context) (erro error) {
 	return
 }
 
-// ExtrairUsuarioID retorna o usuarioId que está salvo no token
 func ExtrairUsuarioID(r *gin.Context) (usuarioID uint64, erro error) {
 	tokenString := extrairToken(r)
 	token, erro := jwt.Parse(tokenString, retornarChaveDeVerificacao)

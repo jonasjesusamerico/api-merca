@@ -15,28 +15,28 @@ type LoginController struct {
 	Repo repository.IRepository
 }
 
-func (cp LoginController) NameGroupRoute() string {
+func (lc LoginController) NameGroupRoute() string {
 	return "/login"
 }
 
-func (cp LoginController) Login(c *gin.Context) {
-	var user model.User
+func (lc LoginController) Login(c *gin.Context) {
+	var usuario model.Usuario
 
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&usuario); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
-	var usuarioSalvoNoBanco model.User
-	erro := cp.Repo.FindFirst(&usuarioSalvoNoBanco, "email = ?", user.Email)
+	var usuarioSalvoNoBanco model.Usuario
+	erro := lc.Repo.FindFirst(&usuarioSalvoNoBanco, "email = ?", usuario.Email)
 	if erro != nil {
 		// respostas.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
 
-	if erro = auth.VerificarSenha(usuarioSalvoNoBanco.Senha, user.Senha); erro != nil {
+	if erro = auth.VerificarSenha(usuarioSalvoNoBanco.Senha, usuario.Senha); erro != nil {
 		// respostas.Erro(w, http.StatusUnauthorized, erro)
 		return
 	}

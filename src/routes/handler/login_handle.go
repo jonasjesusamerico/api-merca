@@ -12,18 +12,18 @@ type LoginHandler struct {
 	Route *gin.RouterGroup
 }
 
-func (user LoginHandler) RotasAutenticadas() LoginHandler {
-	return user
+func (l LoginHandler) RotasAutenticadas() LoginHandler {
+	return l
 }
 
-func (user LoginHandler) RotasNaoAutenticadas() LoginHandler {
+func (l LoginHandler) RotasNaoAutenticadas() LoginHandler {
 
-	controller := controllers.LoginController{Repo: user.Repo}
+	controller := controllers.LoginController{Repo: l.Repo}
 
-	route := user.Route.Group("/" + controller.NameGroupRoute())
+	route := l.Route.Group("/" + controller.NameGroupRoute())
 	{
 		route.POST("/", controller.Login)
 	}
 
-	return user
+	return l
 }

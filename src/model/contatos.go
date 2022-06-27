@@ -3,7 +3,7 @@ package model
 import "api-merca/src/contexto"
 
 type Contatos struct {
-	Contacts []CellPhone
+	Contacts []Telefone
 }
 
 func (contato *Contatos) Adequar() {

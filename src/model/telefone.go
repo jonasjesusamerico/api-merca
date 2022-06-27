@@ -2,35 +2,35 @@ package model
 
 import "strings"
 
-type CellPhone struct {
+type Telefone struct {
 	ID   uint64 `gorm:"primarykey column:id"`
 	Name string `gorm:"column:name" json:"name" `
 	Num  string `gorm:"column:cell_phone" json:"cellphone"`
 	Tenant
 }
 
-func (c CellPhone) GetId() uint64 {
-	return c.ID
+func (t Telefone) GetId() uint64 {
+	return t.ID
 }
 
-func (c *CellPhone) Validate() error {
-	c.SetTenant()
+func (t *Telefone) Validate() error {
+	t.SetTenant()
 	return nil
 }
 
-func (cellPhone CellPhone) Formatar(customizar bool) CellPhone {
+func (t Telefone) Formatar(customizar bool) Telefone {
 
 	if !customizar {
-		return cellPhone
+		return t
 	}
 
-	numero := strings.Replace(cellPhone.Num, "[^\\d.]", "", -1)
+	numero := strings.Replace(t.Num, "[^\\d.]", "", -1)
 	pais := numero[0:2]
 	ddd := numero[2:4]
 	part1 := numero[4:9]
 	part2 := numero[9:]
 
-	cellPhone.Num = "+" + pais + " (" + ddd + ") " + part1 + "-" + part2
-	cellPhone.Name = strings.ToUpper(cellPhone.Name)
-	return cellPhone
+	t.Num = "+" + pais + " (" + ddd + ") " + part1 + "-" + part2
+	t.Name = strings.ToUpper(t.Name)
+	return t
 }

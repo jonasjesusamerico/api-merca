@@ -23,7 +23,7 @@ func (h Handler) MakeHandlers() {
 
 	v1 := api.Group("v1", middlewares.MiddleRecriaContexto())
 	{
-		UserHandler{Repo: basicRepository, Route: v1}.RotasAutenticadas().RotasNaoAutenticadas()
-		CellPhoneHandler{Repo: basicRepository, Route: v1}.RotasAutenticadas().RotasNaoAutenticadas()
+		UsuarioHandler{Repo: basicRepository, Route: v1}.RotasAutenticadas().RotasNaoAutenticadas()
+		TelefoneHandler{Repo: basicRepository, Route: v1}.RotasAutenticadas().RotasNaoAutenticadas()
 	}
 }
