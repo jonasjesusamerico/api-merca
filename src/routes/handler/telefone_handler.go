@@ -13,17 +13,6 @@ type TelefoneHandler struct {
 	Route *gin.RouterGroup
 }
 
-// MakeCustom tem como objetivo ser adicionado as rotas que não são padrão do crud
-func (th TelefoneHandler) MakeCustom(route *gin.Engine) {
-	db := repository.Basic{}
-
-	cellPhoneController := controllers.TelefoneController{Repo: db}
-
-	r := route.Group("/" + cellPhoneController.NameGroupRoute())
-	r.POST("/contatos", cellPhoneController.CreateContatos)
-
-}
-
 func (th TelefoneHandler) RotasAutenticadas() TelefoneHandler {
 
 	controller := controllers.TelefoneController{Repo: th.Repo}

@@ -24,6 +24,5 @@ func (l LoginHandler) RotasNaoAutenticadas() LoginHandler {
 	{
 		route.POST("/", controller.Login)
 	}
-
 	return l
 }
