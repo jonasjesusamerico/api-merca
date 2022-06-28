@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"api-merca/src/controllers/resposta"
 	"api-merca/src/model"
 	"api-merca/src/repository"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -19,9 +21,9 @@ func (cp TelefoneController) NameGroupRoute() string {
 
 func (cp TelefoneController) FindAll(c *gin.Context) {
 	var cellPhones []model.Telefone
-	// cp.Repo.Find(&cellPhones)
+
 	cp.Repo.FindAll(&cellPhones, "")
-	c.JSON(http.StatusOK, cellPhones)
+	resposta.JSON(c, http.StatusOK, cellPhones)
 }
 
 func (cp TelefoneController) FindById(c *gin.Context) {
@@ -31,27 +33,23 @@ func (cp TelefoneController) FindById(c *gin.Context) {
 	repository.Basic{}.FindById(&cellPhone, id)
 
 	if cellPhone.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{
-			"not_found": "Telefone not found",
-		})
+		resposta.Erro(c, http.StatusNotFound, errors.New("telefone não encontrado"))
 		return
 	}
 
-	c.JSON(http.StatusOK, cellPhone)
+	resposta.JSON(c, http.StatusOK, cellPhone)
 }
 
 func (cp TelefoneController) Create(c *gin.Context) {
 	var cellPhone model.Telefone
 
 	if err := c.ShouldBindJSON(&cellPhone); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		resposta.Erro(c, http.StatusBadRequest, err)
 		return
 	}
 
 	cp.Repo.Save(&cellPhone)
-	c.JSON(http.StatusOK, cellPhone)
+	resposta.JSON(c, http.StatusOK, cellPhone)
 }
 
 func (cp TelefoneController) Update(c *gin.Context) {
@@ -61,13 +59,11 @@ func (cp TelefoneController) Update(c *gin.Context) {
 	cp.Repo.FindById(&cellPhone, id)
 
 	if err := c.ShouldBindJSON(&cellPhone); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		resposta.Erro(c, http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, cellPhone)
+	resposta.JSON(c, http.StatusOK, cellPhone)
 }
 
 func (cp TelefoneController) Delete(c *gin.Context) {
@@ -75,20 +71,19 @@ func (cp TelefoneController) Delete(c *gin.Context) {
 	id := c.Params.ByName("id")
 	repository.Basic{}.Delete(&cellPhone, id)
 	c.JSON(http.StatusOK, gin.H{"data": "Telefone deletado com sucesso"})
+	resposta.JSON(c, http.StatusOK, gin.H{"message": "Telefone deletado com sucesso"})
 }
 
 func (cp TelefoneController) CreateContatos(c *gin.Context) {
 
 	var contatos model.Contatos
 	if err := c.ShouldBindJSON(&contatos); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		resposta.Erro(c, http.StatusBadRequest, err)
 		return
 	}
 
 	contatos.Adequar()
 	cp.Repo.SaveAll(contatos.Contacts)
 
-	c.JSON(http.StatusOK, contatos.Contacts)
+	resposta.JSON(c, http.StatusOK, contatos.Contacts)
 }
