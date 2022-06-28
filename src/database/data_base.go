@@ -33,21 +33,17 @@ func (d database) WithContext() (bancoDados *gorm.DB) {
 }
 
 func ConnectWithDatabase() {
-	urlConexaoPostgres := "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable TimeZone=America/Sao_Paulo"
+	urlConexaoPostgres := "host=postgresql_mercafacil user=admin password=admin dbname=postgres port=5432 sslmode=disable TimeZone=America/Sao_Paulo"
 	Connection.db_postgres, err = gorm.Open(postgres.Open(urlConexaoPostgres), &gorm.Config{})
 	if err != nil {
-		log.Panic("Erro ao conectar ao banco de dados")
+		log.Panic("Erro ao conectar ao banco de dados 1")
 	}
 
-	StringConexaoBanco := fmt.Sprintf("%s:%s@/%s?charset=utf8&parseTime=True&loc=Local",
-		"root",
-		"password",
-		"devbook",
-	)
+	StringConexaoBanco := "admin:admin@tcp(mysql_mercafacil:3306)/admin?charset=utf8mb4&parseTime=True&loc=Local"
 	Connection.db_mysql, err = gorm.Open(mysql.Open(StringConexaoBanco), &gorm.Config{})
 
 	if err != nil {
-		log.Panic("Erro ao conectar ao banco de dados")
+		log.Panic("Erro ao conectar ao banco de dados Teste", err)
 	}
 
 	Connection.db_postgres.AutoMigrate(&model.Telefone{}, &model.Usuario{})
@@ -55,7 +51,7 @@ func ConnectWithDatabase() {
 	// DB.AutoMigrate(&models.CreditCard{})
 
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("Teste: ", err.Error())
 	}
 
 }
