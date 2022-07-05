@@ -12,3 +12,7 @@ type Tenant struct {
 func (t *Tenant) SetTenant() {
 	t.TenantId = contexto.ContextoAutenticacao.GetTenantId()
 }
+
+func (t Tenant) GetTenantId() uint64 {
+	return t.TenantId
+}

@@ -33,13 +33,13 @@ func (d database) WithContext() (bancoDados *gorm.DB) {
 }
 
 func ConnectWithDatabase() {
-	urlConexaoPostgres := "host=postgresql_mercafacil user=admin password=admin dbname=postgres port=5432 sslmode=disable TimeZone=America/Sao_Paulo"
+	urlConexaoPostgres := "host=localhost user=admin password=admin dbname=postgres port=5432 sslmode=disable TimeZone=America/Sao_Paulo"
 	Connection.db_postgres, err = gorm.Open(postgres.Open(urlConexaoPostgres), &gorm.Config{})
 	if err != nil {
 		log.Panic("Erro ao conectar ao banco de dados 1")
 	}
 
-	StringConexaoBanco := "admin:admin@tcp(mysql_mercafacil:3306)/admin?charset=utf8mb4&parseTime=True&loc=Local"
+	StringConexaoBanco := "admin:admin@tcp(localhost:3306)/admin?charset=utf8mb4&parseTime=True&loc=Local"
 	Connection.db_mysql, err = gorm.Open(mysql.Open(StringConexaoBanco), &gorm.Config{})
 
 	if err != nil {

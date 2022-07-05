@@ -11,7 +11,7 @@ import (
 type Usuario struct {
 	ID             uint64    `gorm:"primarykey column:id" json:"id,omitempty"`
 	Email          string    `gorm:"column:email" json:"email,omitempty"`
-	Senha          string    `gorm:"column:senha" json:"-"`
+	Senha          string    `gorm:"column:senha" json:"senha"`
 	IsCustomizavel bool      `gorm:"column:is_customizavel" json:"is_customizavel,omitempty"`
 	ClienteName    string    `gorm:"column:cliente_name" json:"cliente_name,omitempty"`
 	CriadoEm       time.Time `gorm:"column:criado_em" json:"criado_em,omitempty"`
@@ -25,7 +25,7 @@ func (u Usuario) GetId() uint64 {
 
 func (u *Usuario) Validate() error {
 	u.SetTenant()
-	u.Formatar()
+	u.Validar()
 
 	return nil
 }
@@ -35,7 +35,7 @@ func (u *Usuario) AfterCreate(tx *gorm.DB) (err error) {
 	return
 }
 
-func (u *Usuario) Formatar() (erro error) {
+func (u *Usuario) Validar() (erro error) {
 	u.Email = strings.TrimSpace(u.Email)
 
 	senhaComHash, erro := auth.Hash(u.Senha)

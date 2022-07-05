@@ -11,6 +11,8 @@ type Handler struct {
 	Route *gin.Engine
 }
 
+//MakeHandlers é reponsavel por construir os end point, tem como uma injeção a instancia do banco que faz o envio para todos controller
+//Quando necessario a troca do serviço de banco, basta que o novo service respeite a assinatura da interface, que funcionará normal
 func (h Handler) MakeHandlers() {
 	basicRepository := repository.Basic{}
 

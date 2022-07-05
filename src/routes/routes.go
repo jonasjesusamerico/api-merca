@@ -14,14 +14,8 @@ func (route Router) Route() {
 	r := gin.Default()
 	r.SetTrustedProxies(nil)
 
-	createRoutes(r)
-
-	r.Run(":8000")
-}
-
-// createDefaultRoutes é Responsavel pro criar as rotas padrão do CRUD, basta adicionar o controlador assinado pela interface
-func createRoutes(r *gin.Engine) {
-
 	gin.SetMode(gin.ReleaseMode)
 	handler.Handler{Route: r}.MakeHandlers()
+
+	r.Run(":8000")
 }
