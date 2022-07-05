@@ -49,6 +49,18 @@ func (uc UsuarioController) Create(c *gin.Context) {
 		return
 	}
 
+	usuarioSalvoNoBanco := model.Usuario{}
+	erro := uc.Repo.FindFirst(&usuarioSalvoNoBanco, "email = ?", usuario.Email)
+	if erro != nil {
+		resposta.Erro(c, http.StatusInternalServerError, erro)
+		return
+	}
+
+	if usuarioSalvoNoBanco.ID != 0 {
+		resposta.Erro(c, http.StatusConflict, errors.New("email informado já está cadastrado"))
+		return
+	}
+
 	uc.Repo.Save(&usuario)
 	resposta.JSON(c, http.StatusOK, usuario)
 }
