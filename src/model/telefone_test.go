@@ -30,7 +30,7 @@ func TestFormatar(t *testing.T) {
 	contexto.CriaContextoGlobalAutenticacao()
 	contexto.SetContextoAutenticacao(1, string(enum.POSTGRES_SQL), true)
 
-	telefone := validTelefone().Formatar(true)
+	telefone, _ := validTelefone().Formatar(true)
 
 	if telefone.Num != "+00 (00) 00000-0000" {
 		t.Errorf("Erro ao customizar o número do telefone")

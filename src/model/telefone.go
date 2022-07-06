@@ -1,6 +1,9 @@
 package model
 
-import "strings"
+import (
+	"errors"
+	"strings"
+)
 
 type Telefone struct {
 	ID   uint64 `gorm:"primarykey column:id"`
@@ -18,13 +21,19 @@ func (t *Telefone) Validate() error {
 	return nil
 }
 
-func (t Telefone) Formatar(customizar bool) Telefone {
+func (t Telefone) Formatar(customizar bool) (telefone Telefone, err error) {
 
 	if !customizar {
-		return t
+		telefone = t
+		return
 	}
 
 	numero := strings.Replace(t.Num, "[^\\d.]", "", -1)
+	if len(numero) != 13 {
+		errorMessage := "O telefone de: " + t.Name + " com o número: " + t.Num + ", não está de acordo com o padrão do sistema. +00 (00) 00000-0000. Ou com pelo menos 13 digitos válidos"
+		err = errors.New(errorMessage)
+		return
+	}
 	pais := numero[0:2]
 	ddd := numero[2:4]
 	part1 := numero[4:9]
@@ -32,5 +41,6 @@ func (t Telefone) Formatar(customizar bool) Telefone {
 
 	t.Num = "+" + pais + " (" + ddd + ") " + part1 + "-" + part2
 	t.Name = strings.ToUpper(t.Name)
-	return t
+	telefone = t
+	return
 }

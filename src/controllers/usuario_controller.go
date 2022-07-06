@@ -22,19 +22,36 @@ func (uc UsuarioController) NameGroupRoute() string {
 func (uc UsuarioController) FindAll(c *gin.Context) {
 	var usuarios []model.Usuario
 
-	uc.Repo.FindAll(&usuarios, "")
-	c.JSON(http.StatusOK, usuarios)
+	err := uc.Repo.FindAll(&usuarios, "")
+	if err != nil {
+		resposta.Erro(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	if len(usuarios) == 0 {
+		resposta.JSON(c, http.StatusNoContent, usuarios)
+		return
+	}
+
 	resposta.JSON(c, http.StatusOK, usuarios)
 }
 
 func (uc UsuarioController) FindById(c *gin.Context) {
 	var usuario model.Usuario
-	id, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 64)
+	id, err := strconv.ParseUint(c.Params.ByName("id"), 10, 64)
+	if err != nil {
+		resposta.Erro(c, http.StatusInternalServerError, err)
+		return
+	}
 
-	uc.Repo.FindById(&usuario, id)
+	err = uc.Repo.FindById(&usuario, id)
+	if err != nil {
+		resposta.Erro(c, http.StatusInternalServerError, err)
+		return
+	}
 
 	if usuario.ID == 0 {
-		resposta.JSON(c, http.StatusOK, errors.New("usuário não encontrado"))
+		resposta.JSON(c, http.StatusNotFound, errors.New("usuário não encontrado"))
 		return
 	}
 
@@ -45,7 +62,7 @@ func (uc UsuarioController) Create(c *gin.Context) {
 	var usuario model.Usuario
 
 	if err := c.ShouldBindJSON(&usuario); err != nil {
-		resposta.JSON(c, http.StatusOK, err.Error())
+		resposta.Erro(c, http.StatusBadRequest, err)
 		return
 	}
 
@@ -62,9 +79,8 @@ func (uc UsuarioController) Create(c *gin.Context) {
 	}
 
 	_, err := uc.Repo.Save(&usuario)
-
 	if err != nil {
-		resposta.Erro(c, http.StatusBadRequest, err)
+		resposta.Erro(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -75,10 +91,14 @@ func (uc UsuarioController) Update(c *gin.Context) {
 	var usuario model.Usuario
 	id := c.Params.ByName("id")
 
-	uc.Repo.FindById(&usuario, id)
+	err := uc.Repo.FindById(&usuario, id)
+	if err != nil {
+		resposta.Erro(c, http.StatusInternalServerError, err)
+		return
+	}
 
 	if err := c.ShouldBindJSON(&usuario); err != nil {
-		resposta.JSON(c, http.StatusOK, err.Error())
+		resposta.Erro(c, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -86,10 +106,7 @@ func (uc UsuarioController) Update(c *gin.Context) {
 }
 
 func (uc UsuarioController) Delete(c *gin.Context) {
-	var usuario model.Usuario
-	id := c.Params.ByName("id")
-	uc.Repo.Delete(&usuario, id)
-	resposta.JSON(c, http.StatusOK, gin.H{"message": "Usuario deletado com sucesso"})
+	resposta.BadRequest(c, "Entre em contato com o suporte para solicitar exclusão do usuário desejado")
 }
 
 func (uc UsuarioController) RotaCustomizada(c *gin.Context) {

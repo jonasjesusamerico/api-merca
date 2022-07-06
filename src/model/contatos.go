@@ -6,10 +6,16 @@ type Contatos struct {
 	Contacts []Telefone
 }
 
-func (contato *Contatos) Adequar() {
+func (contato *Contatos) Adequar() (err error) {
 	isCustomizavel := contexto.ContextoAutenticacao.IsCustomizavel()
-	for i, element := range contato.Contacts {
-		element.Validate()
-		contato.Contacts[i] = element.Formatar(isCustomizavel)
+	for i, telefone := range contato.Contacts {
+		telefone.Validate()
+		tel, erro := telefone.Formatar(isCustomizavel)
+		if err != nil {
+			err = erro
+			break
+		}
+		contato.Contacts[i] = tel
 	}
+	return
 }

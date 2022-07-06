@@ -1,6 +1,8 @@
 package resposta
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,4 +22,16 @@ func Erro(c *gin.Context, statusCode int, erro error) {
 		Erro: erro.Error(),
 	})
 
+}
+
+func BadRequest(c *gin.Context, message string) {
+	c.JSON(http.StatusBadRequest, gin.H{"message": message})
+}
+
+func NotFound(c *gin.Context, registro string) {
+	c.JSON(http.StatusNotFound, gin.H{"message": registro + " não encontrado"})
+}
+
+func OkMessage(c *gin.Context, message string) {
+	c.JSON(http.StatusNotFound, gin.H{"message": message})
 }

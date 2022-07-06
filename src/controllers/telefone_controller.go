@@ -4,7 +4,6 @@ import (
 	"api-merca/src/controllers/resposta"
 	"api-merca/src/model"
 	"api-merca/src/repository"
-	"errors"
 	"net/http"
 	"strconv"
 
@@ -22,18 +21,36 @@ func (cp TelefoneController) NameGroupRoute() string {
 func (cp TelefoneController) FindAll(c *gin.Context) {
 	var cellPhones []model.Telefone
 
-	cp.Repo.FindAll(&cellPhones, "")
+	err := cp.Repo.FindAll(&cellPhones, "")
+	if err != nil {
+		resposta.Erro(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	if len(cellPhones) == 0 {
+		resposta.JSON(c, http.StatusNoContent, cellPhones)
+		return
+	}
+
 	resposta.JSON(c, http.StatusOK, cellPhones)
 }
 
 func (cp TelefoneController) FindById(c *gin.Context) {
 	var cellPhone model.Telefone
-	id, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 64)
+	id, err := strconv.ParseUint(c.Params.ByName("id"), 10, 64)
+	if err != nil {
+		resposta.Erro(c, http.StatusInternalServerError, err)
+		return
+	}
 
-	repository.Basic{}.FindById(&cellPhone, id)
+	err = cp.Repo.FindById(&cellPhone, id)
+	if err != nil {
+		resposta.Erro(c, http.StatusInternalServerError, err)
+		return
+	}
 
 	if cellPhone.ID == 0 {
-		resposta.Erro(c, http.StatusNotFound, errors.New("telefone não encontrado"))
+		resposta.NotFound(c, "Telefone")
 		return
 	}
 
@@ -56,7 +73,11 @@ func (cp TelefoneController) Update(c *gin.Context) {
 	var cellPhone model.Telefone
 	id := c.Params.ByName("id")
 
-	cp.Repo.FindById(&cellPhone, id)
+	err := cp.Repo.FindById(&cellPhone, id)
+	if err != nil {
+		resposta.Erro(c, http.StatusInternalServerError, err)
+		return
+	}
 
 	if err := c.ShouldBindJSON(&cellPhone); err != nil {
 		resposta.Erro(c, http.StatusBadRequest, err)
@@ -69,9 +90,12 @@ func (cp TelefoneController) Update(c *gin.Context) {
 func (cp TelefoneController) Delete(c *gin.Context) {
 	var cellPhone model.Telefone
 	id := c.Params.ByName("id")
-	repository.Basic{}.Delete(&cellPhone, id)
-	c.JSON(http.StatusOK, gin.H{"data": "Telefone deletado com sucesso"})
-	resposta.JSON(c, http.StatusOK, gin.H{"message": "Telefone deletado com sucesso"})
+	err := cp.Repo.Delete(&cellPhone, id)
+	if err != nil {
+		resposta.Erro(c, http.StatusInternalServerError, err)
+		return
+	}
+	resposta.OkMessage(c, "Telefone deletado com sucesso")
 }
 
 func (cp TelefoneController) CreateContatos(c *gin.Context) {
@@ -82,8 +106,15 @@ func (cp TelefoneController) CreateContatos(c *gin.Context) {
 		return
 	}
 
-	contatos.Adequar()
-	cp.Repo.SaveAll(contatos.Contacts)
+	if err := contatos.Adequar(); err != nil {
+		resposta.Erro(c, http.StatusBadRequest, err)
+		return
+	}
+	err := cp.Repo.SaveAll(contatos.Contacts)
+	if err != nil {
+		resposta.Erro(c, http.StatusInternalServerError, err)
+		return
+	}
 
 	resposta.JSON(c, http.StatusOK, contatos.Contacts)
 }
