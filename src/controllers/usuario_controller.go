@@ -61,7 +61,13 @@ func (uc UsuarioController) Create(c *gin.Context) {
 		return
 	}
 
-	uc.Repo.Save(&usuario)
+	_, err := uc.Repo.Save(&usuario)
+
+	if err != nil {
+		resposta.Erro(c, http.StatusBadRequest, err)
+		return
+	}
+
 	resposta.JSON(c, http.StatusOK, usuario)
 }
 

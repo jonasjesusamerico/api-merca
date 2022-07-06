@@ -2,6 +2,7 @@ package model
 
 import (
 	"api-merca/src/auth"
+	"errors"
 	"strings"
 	"time"
 
@@ -23,11 +24,27 @@ func (u Usuario) GetId() uint64 {
 	return u.ID
 }
 
-func (u *Usuario) Validate() error {
+func (u *Usuario) Validate() (err error) {
 	u.SetTenant()
 	u.Validar()
 
-	return nil
+	if u.Email == "" {
+		err = errors.New("o email é obrigatório e não pode estar em branco")
+	}
+
+	if u.Senha == "" {
+		err = errors.New("a senha é obrigatório e não pode estar em branco")
+	}
+
+	if u.ClienteName == "" {
+		err = errors.New("o cliente name é obrigatório e não pode estar em branco")
+	}
+
+	if u.BancoDados == "" {
+		err = errors.New("o banco de dados é obrigatório e não pode estar em branco")
+	}
+
+	return
 }
 
 func (u *Usuario) AfterCreate(tx *gorm.DB) (err error) {
