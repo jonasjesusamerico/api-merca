@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/badoux/checkmail"
 	"gorm.io/gorm"
 )
 
@@ -27,6 +28,10 @@ func (u Usuario) GetId() uint64 {
 func (u *Usuario) Validate() (err error) {
 	u.SetTenant()
 	u.Validar()
+
+	if erro := checkmail.ValidateFormat(u.Email); erro != nil {
+		return errors.New("o e-mail inserido é inválido")
+	}
 
 	if u.Email == "" {
 		err = errors.New("o email é obrigatório e não pode estar em branco")

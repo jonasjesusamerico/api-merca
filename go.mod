@@ -19,6 +19,7 @@ require (
 )
 
 require (
+	github.com/badoux/checkmail v1.2.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/assert/v2 v2.0.1
