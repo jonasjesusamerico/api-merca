@@ -13,7 +13,13 @@ type UsuarioHandler struct {
 	Route *gin.RouterGroup
 }
 
-func (u UsuarioHandler) RotasAutenticadas() UsuarioHandler {
+func (u UsuarioHandler) New(repo repository.IRepository, rota *gin.RouterGroup) IHandler {
+	u.Repo = repo
+	u.Route = rota
+	return &u
+}
+
+func (u UsuarioHandler) RotasAutenticadas() IHandler {
 
 	controller := controllers.UsuarioController{Repo: u.Repo}
 
@@ -25,10 +31,10 @@ func (u UsuarioHandler) RotasAutenticadas() UsuarioHandler {
 		route.DELETE("/:id", controller.Delete)
 	}
 
-	return u
+	return &u
 }
 
-func (u UsuarioHandler) RotasNaoAutenticadas() UsuarioHandler {
+func (u UsuarioHandler) RotasNaoAutenticadas() IHandler {
 	controller := controllers.UsuarioController{Repo: u.Repo}
 
 	route := u.Route.Group(controller.NameGroupRoute())
@@ -36,5 +42,5 @@ func (u UsuarioHandler) RotasNaoAutenticadas() UsuarioHandler {
 		route.POST("/", controller.Create)
 	}
 
-	return u
+	return &u
 }

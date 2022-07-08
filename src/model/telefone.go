@@ -23,17 +23,18 @@ func (t *Telefone) Validate() error {
 
 func (t Telefone) Formatar(customizar bool) (telefone Telefone, err error) {
 
-	if !customizar {
-		telefone = t
-		return
-	}
-
 	numero := strings.Replace(t.Num, "[^\\d.]", "", -1)
 	if len(numero) != 13 {
 		errorMessage := "O telefone de: " + t.Name + " com o número: " + t.Num + ", não está de acordo com o padrão do sistema. +00 (00) 00000-0000. Ou com pelo menos 13 digitos válidos"
 		err = errors.New(errorMessage)
 		return
 	}
+
+	if !customizar {
+		telefone = t
+		return
+	}
+
 	pais := numero[0:2]
 	ddd := numero[2:4]
 	part1 := numero[4:9]

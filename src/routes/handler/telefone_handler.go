@@ -13,7 +13,13 @@ type TelefoneHandler struct {
 	Route *gin.RouterGroup
 }
 
-func (th TelefoneHandler) RotasAutenticadas() TelefoneHandler {
+func (th TelefoneHandler) New(repo repository.IRepository, rota *gin.RouterGroup) IHandler {
+	th.Repo = repo
+	th.Route = rota
+	return &th
+}
+
+func (th TelefoneHandler) RotasAutenticadas() IHandler {
 
 	controller := controllers.TelefoneController{Repo: th.Repo}
 
@@ -30,7 +36,7 @@ func (th TelefoneHandler) RotasAutenticadas() TelefoneHandler {
 	return th
 }
 
-func (t TelefoneHandler) RotasNaoAutenticadas() TelefoneHandler {
+func (t TelefoneHandler) RotasNaoAutenticadas() IHandler {
 
 	return t
 }

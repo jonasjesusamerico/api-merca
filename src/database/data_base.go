@@ -26,8 +26,10 @@ func (d database) WithContext() (bancoDados *gorm.DB) {
 	key := contexto.ContextoAutenticacao.GetBancoDados()
 	if key == string(enum.MY_SQL) {
 		bancoDados = d.db_mysql
+		return
 	} else if key == string(enum.POSTGRES_SQL) {
 		bancoDados = d.db_postgres
+		return
 	}
 	return
 }

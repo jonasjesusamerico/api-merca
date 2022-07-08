@@ -90,7 +90,7 @@ func (cp TelefoneController) Update(c *gin.Context) {
 func (cp TelefoneController) Delete(c *gin.Context) {
 	var cellPhone model.Telefone
 	id := c.Params.ByName("id")
-	err := cp.Repo.Delete(&cellPhone, id)
+	err := cp.Repo.Delete(&cellPhone, "id = ?", id)
 	if err != nil {
 		resposta.Erro(c, http.StatusInternalServerError, err)
 		return
@@ -106,11 +106,14 @@ func (cp TelefoneController) CreateContatos(c *gin.Context) {
 		return
 	}
 
-	if err := contatos.Adequar(); err != nil {
+	err := contatos.Adequar()
+	if err != nil {
 		resposta.Erro(c, http.StatusBadRequest, err)
 		return
 	}
-	err := cp.Repo.SaveAll(contatos.Contacts)
+
+	err = cp.Repo.SaveAll(contatos.Contacts)
+
 	if err != nil {
 		resposta.Erro(c, http.StatusInternalServerError, err)
 		return

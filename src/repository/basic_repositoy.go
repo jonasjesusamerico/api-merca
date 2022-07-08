@@ -44,7 +44,7 @@ func (Basic) SaveAll(models interface{}) (err error) {
 }
 
 func (Basic) FindById(receiver model.IModel, id interface{}) (err error) {
-	err = where("", nil).Statement.First(receiver, id).Error
+	err = where("id = ?", id).Statement.First(receiver).Error
 	return
 }
 

@@ -12,11 +12,17 @@ type LoginHandler struct {
 	Route *gin.RouterGroup
 }
 
-func (l LoginHandler) RotasAutenticadas() LoginHandler {
+func (l *LoginHandler) New(repo repository.IRepository, rota *gin.RouterGroup) IHandler {
+	l.Repo = repo
+	l.Route = rota
 	return l
 }
 
-func (l LoginHandler) RotasNaoAutenticadas() LoginHandler {
+func (l LoginHandler) RotasAutenticadas() IHandler {
+	return &l
+}
+
+func (l LoginHandler) RotasNaoAutenticadas() IHandler {
 
 	controller := controllers.LoginController{Repo: l.Repo}
 
@@ -24,5 +30,5 @@ func (l LoginHandler) RotasNaoAutenticadas() LoginHandler {
 	{
 		route.POST("", controller.Login)
 	}
-	return l
+	return &l
 }

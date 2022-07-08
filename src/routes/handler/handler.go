@@ -7,6 +7,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// var route *gin.Engine
+
+type IHandler interface {
+	New(Repo repository.IRepository, Route *gin.RouterGroup) IHandler
+	RotasAutenticadas() IHandler
+	RotasNaoAutenticadas() IHandler
+}
+
 type Handler struct {
 	Route *gin.Engine
 }
@@ -17,15 +25,32 @@ func (h Handler) MakeHandlers() {
 	basicRepository := repository.Basic{}
 
 	main := h.Route.Group("/")
-	{
-		LoginHandler{Repo: basicRepository, Route: main}.RotasAutenticadas().RotasNaoAutenticadas()
+	api := main.Group("api")
+	v1 := api.Group("v1", middlewares.MiddleRecriaContexto())
+
+	rotasMain := []IHandler{
+		&LoginHandler{},
 	}
 
-	api := main.Group("api")
+	rotasApi := []IHandler{}
 
-	v1 := api.Group("v1", middlewares.MiddleRecriaContexto())
-	{
-		UsuarioHandler{Repo: basicRepository, Route: v1}.RotasAutenticadas().RotasNaoAutenticadas()
-		TelefoneHandler{Repo: basicRepository, Route: v1}.RotasAutenticadas().RotasNaoAutenticadas()
+	rotasV1 := []IHandler{
+		&UsuarioHandler{},
+		&TelefoneHandler{},
+	}
+
+	criaRotas(rotasMain, &basicRepository, main)
+	criaRotas(rotasApi, &basicRepository, api)
+	criaRotas(rotasV1, &basicRepository, v1)
+
+}
+
+func criaRotas(rotas []IHandler, repo *repository.Basic, base *gin.RouterGroup) {
+	if len(rotas) == 0 {
+		return
+	}
+
+	for _, rota := range rotas {
+		rota.New(repo, base).RotasAutenticadas().RotasNaoAutenticadas()
 	}
 }

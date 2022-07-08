@@ -1,8 +1,14 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"api-merca/src/repository"
+
+	"github.com/gin-gonic/gin"
+)
 
 type IController interface {
+	New(repository repository.IRepository) IController
+
 	NameGroupRoute() string
 
 	FindAll(c *gin.Context)
