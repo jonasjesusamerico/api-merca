@@ -84,7 +84,7 @@ func (uc UsuarioController) Create(c *gin.Context) {
 		return
 	}
 
-	resposta.JSON(c, http.StatusOK, usuario)
+	resposta.JSON(c, http.StatusOK, usuario.GetUsuarioRetorno())
 }
 
 func (uc UsuarioController) Update(c *gin.Context) {
@@ -102,7 +102,7 @@ func (uc UsuarioController) Update(c *gin.Context) {
 		return
 	}
 
-	resposta.JSON(c, http.StatusOK, usuario)
+	resposta.JSON(c, http.StatusOK, usuario.GetUsuarioRetorno())
 }
 
 func (uc UsuarioController) Delete(c *gin.Context) {

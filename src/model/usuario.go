@@ -13,11 +13,11 @@ import (
 type Usuario struct {
 	ID             uint64    `gorm:"primarykey column:id" json:"id,omitempty"`
 	Email          string    `gorm:"column:email" json:"email,omitempty"`
-	Senha          string    `gorm:"column:senha" json:"senha"`
+	Senha          string    `gorm:"column:senha" json:"senha,omitempty"`
 	IsCustomizavel bool      `gorm:"column:is_customizavel" json:"is_customizavel,omitempty"`
 	ClienteName    string    `gorm:"column:cliente_name" json:"cliente_name,omitempty"`
 	CriadoEm       time.Time `gorm:"column:criado_em" json:"criado_em,omitempty"`
-	BancoDados     string    `gorm:"column:banco_dados" json:"-"`
+	BancoDados     string    `gorm:"column:banco_dados" json:"banco_dados,omitempty"`
 	Tenant
 }
 
@@ -68,4 +68,16 @@ func (u *Usuario) Validar() (erro error) {
 	u.Senha = string(senhaComHash)
 
 	return
+}
+
+func (u Usuario) GetUsuarioRetorno() Usuario {
+	return Usuario{
+		ID:             u.ID,
+		Email:          u.Email,
+		Senha:          "",
+		IsCustomizavel: u.IsCustomizavel,
+		ClienteName:    u.ClienteName,
+		CriadoEm:       u.CriadoEm,
+		BancoDados:     "",
+	}
 }
