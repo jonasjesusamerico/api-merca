@@ -2,7 +2,8 @@ version: '3'
 
 services:
 
-  mysql_mercafacil:
+  mysql:
+    container_name: mysql_mercafacil
     image: mysql
     environment:
     - MYSQL_ROOT_PASSWORD=admin
@@ -14,7 +15,8 @@ services:
       - "3306:3306"
     command: --default-authentication-plugin=mysql_native_password
 
-  postgresql_mercafacil:
+  postgresql:
+    container_name: postgresql_mercafacil
     image: postgres
     ports:
       - "5432:5432"
@@ -22,7 +24,8 @@ services:
       POSTGRES_PASSWORD: "admin"
       POSTGRES_USER: "admin"
 
-  web:
+  api-merca-facil:
+    container_name: api-merca-facil
     build:
       dockerfile: Dockerfile
       context: .
@@ -36,7 +39,7 @@ services:
     ports:
     - "8000:8000"
 
-networks:
-  default:
-    name: jonas_default
-    external: true
+# networks:
+#   default:
+#     name: jonas_default
+#     external: true
